@@ -1,0 +1,31 @@
+# Production Environment Configuration
+# Copy to terraform.tfvars and configure
+# DO NOT commit terraform.tfvars to Git
+
+# DigitalOcean API Token
+do_token = "<digitalocean-api-token>"
+
+# Project Configuration
+project_name = "platinumplatform"
+environment  = "prod"
+
+# Region Configuration
+region          = "nyc3"
+secondary_region = "sfo3"
+
+# Cluster Configuration
+cluster_name        = "platinum-k8s-prod"
+enable_auto_scaling = true
+min_nodes           = 3
+max_nodes           = 20
+
+# Security Configuration
+allowed_ssh_ips = ["<ip-address>/32"]
+allowed_k8s_ips = ["0.0.0.0/0", "::/0"]
+
+# Container Registry
+registry_tier = "professional"
+
+# Tags
+tags = ["prod", "platinumplatform", "kubernetes", "production"]
+
