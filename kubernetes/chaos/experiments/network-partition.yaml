@@ -1,0 +1,23 @@
+# Network Partition Chaos Experiment
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition
+  namespace: chaos-testing
+spec:
+  action: partition
+  mode: one
+  selector:
+    namespaces:
+      - apps
+    labelSelectors:
+      app: microservice-1
+  direction: both
+  target:
+    selector:
+      namespaces:
+        - apps
+      labelSelectors:
+        app: microservice-2
+  duration: "30s"
+

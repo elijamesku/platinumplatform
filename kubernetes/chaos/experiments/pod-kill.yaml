@@ -1,0 +1,18 @@
+# Pod Kill Chaos Experiment
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-experiment
+  namespace: chaos-testing
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - apps
+    labelSelectors:
+      app: microservice-1
+  scheduler:
+    cron: "@every 10m"
+  duration: "30s"
+
