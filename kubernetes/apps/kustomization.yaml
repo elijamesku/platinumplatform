@@ -1,0 +1,11 @@
+# Kustomization file for Argo CD
+# This allows for environment-specific overlays
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- microservice-1/deployment.yaml
+- microservice-2/deployment.yaml
+- worker/deployment.yaml
+
