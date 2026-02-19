@@ -1,0 +1,64 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'kubernetes/**'
+  workflow_dispatch:
+
+env:
+  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+  CLUSTER_NAME: ${{ secrets.CLUSTER_NAME }}
+
+jobs:
+  deploy:
+    name: Deploy Kubernetes Manifests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+    
+    - name: Configure kubectl
+      run: |
+        mkdir -p $HOME/.kube
+        echo "${{ env.KUBE_CONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+        chmod 600 $HOME/.kube/config
+    
+    - name: Verify cluster connection
+      run: kubectl cluster-info
+    
+    - name: Apply base resources
+      run: |
+        kubectl apply -f kubernetes/base/namespaces.yaml
+        kubectl apply -f kubernetes/base/rbac.yaml
+        kubectl apply -f kubernetes/base/network-policies.yaml
+        kubectl apply -f kubernetes/base/resource-quotas.yaml
+    
+    - name: Validate manifests
+      run: |
+        kubectl apply --dry-run=client -f kubernetes/apps/ -R
+    
+    - name: Deploy applications
+      if: github.ref == 'refs/heads/main'
+      run: |
+        kubectl apply -f kubernetes/apps/ -R
+    
+    - name: Wait for deployments
+      if: github.ref == 'refs/heads/main'
+      run: |
+        kubectl wait --for=condition=available --timeout=300s deployment/microservice-1 -n apps || true
+        kubectl wait --for=condition=available --timeout=300s deployment/microservice-2 -n apps || true
+        kubectl wait --for=condition=available --timeout=300s deployment/worker -n apps || true
+    
+    - name: Get deployment status
+      if: github.ref == 'refs/heads/main'
+      run: |
+        kubectl get deployments -n apps
+        kubectl get pods -n apps
+
