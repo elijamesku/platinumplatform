@@ -1,0 +1,65 @@
+name: Security Scanning
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+
+jobs:
+  terraform-security:
+    name: Terraform Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        directory: terraform/
+        framework: terraform
+        soft_fail: true
+    
+    - name: Run TFLint
+      uses: terraform-linters/setup-tflint@v4
+      with:
+        tflint_version: latest
+    
+    - name: Run TFLint
+      run: |
+        cd terraform
+        tflint --init
+        tflint --recursive
+  
+  kubernetes-security:
+    name: Kubernetes Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run KubeLinter
+      uses: stackrox/kube-linter-action@v0.2.0
+      with:
+        paths: 'kubernetes/**/*.yaml'
+    
+    - name: Run Polaris
+      uses: FairwindsOps/polaris-action@v1
+      with:
+        scanPath: 'kubernetes/'
+        format: 'json'
+        outputFile: 'polaris-results.json'
+    
+    - name: Upload Polaris results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: polaris-results
+        path: polaris-results.json
+
