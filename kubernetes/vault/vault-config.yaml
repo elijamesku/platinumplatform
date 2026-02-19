@@ -1,0 +1,22 @@
+# Vault Kubernetes Auth Configuration
+# This should be applied after Vault is installed and unsealed
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-k8s-auth
+  namespace: vault
+data:
+  enable-k8s-auth.sh: |
+    #!/bin/sh
+    vault auth enable kubernetes
+    vault write auth/kubernetes/config \
+      token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+      kubernetes_host="https://$KUBERNETES_PORT_443_TCP_ADDR:443" \
+      kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    vault write auth/kubernetes/role/apps \
+      bound_service_account_names=default \
+      bound_service_account_namespaces=apps \
+      policies=apps-policy \
+      ttl=1h
+
