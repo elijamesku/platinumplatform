@@ -1,0 +1,11 @@
+# Base Kubernetes resources
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- namespaces.yaml
+- rbac.yaml
+- network-policies.yaml
+- pod-security-policy.yaml
+- resource-quotas.yaml
+
