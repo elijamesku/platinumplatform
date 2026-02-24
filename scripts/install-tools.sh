@@ -44,4 +44,3 @@ helm version
 
 echo ""
 echo "All tools installed successfully!"
-
