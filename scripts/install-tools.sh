@@ -1,6 +1,5 @@
 #!/bin/bash
-# Install required tools for the platform
-
+# Installing the required tools for the platform
 set -e
 
 echo "Installing required tools..."
