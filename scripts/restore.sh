@@ -37,5 +37,3 @@ echo "Monitor the restore progress in the DigitalOcean console."
 echo ""
 echo "To check restore status:"
 echo "  doctl databases backup list $DATABASE_ID"
-
-
