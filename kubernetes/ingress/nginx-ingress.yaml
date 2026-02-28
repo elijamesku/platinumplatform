@@ -37,4 +37,3 @@ spec:
             name: microservice-1
             port:
               number: 80
-
