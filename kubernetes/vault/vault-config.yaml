@@ -19,4 +19,3 @@ data:
       bound_service_account_namespaces=apps \
       policies=apps-policy \
       ttl=1h
-
