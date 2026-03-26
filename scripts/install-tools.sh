@@ -34,7 +34,6 @@ else
     echo "Helm already installed"
 fi
 
-# Verify installations
 echo ""
 echo "Verifying installations..."
 kubectl version --client
